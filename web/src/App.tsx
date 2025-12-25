@@ -212,10 +212,6 @@ function App() {
           </div>
         </div>
       </main>
-
-      <footer className="relative z-10 py-6 text-center text-sm text-slate-600">
-        <p>Built with ❤️ using React & FastAPI</p>
-      </footer>
     </div>
   );
 }
