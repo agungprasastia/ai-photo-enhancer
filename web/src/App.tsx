@@ -9,8 +9,10 @@ import { Download, RotateCcw, CheckCircle2 } from 'lucide-react';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
+type Step = 'upload' | 'enhance' | 'processing' | 'result';
+
 function App() {
-  const [step, setStep] = useState('upload');
+  const [step, setStep] = useState<Step>('upload');
   const [uploadedFilename, setUploadedFilename] = useState('');
   const [selectedOption, setSelectedOption] = useState('');
   const [isUploading, setIsUploading] = useState(false);
@@ -20,7 +22,7 @@ function App() {
   const [resultFilename, setResultFilename] = useState('');
   const [error, setError] = useState('');
 
-  const handleUpload = async (file) => {
+  const handleUpload = async (file: File) => {
     setIsUploading(true);
     setError('');
 
@@ -36,13 +38,17 @@ function App() {
       setOriginalUrl(URL.createObjectURL(file));
       setStep('enhance');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Upload failed');
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.detail || 'Upload failed');
+      } else {
+        setError('Upload failed');
+      }
     } finally {
       setIsUploading(false);
     }
   };
 
-  const handleEnhance = async (option) => {
+  const handleEnhance = async (option: string) => {
     setSelectedOption(option);
     setIsProcessing(true);
     setStep('processing');
@@ -59,7 +65,11 @@ function App() {
       setEnhancedUrl(`${API_URL}/download/${response.data.result}`);
       setStep('result');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Enhancement failed');
+      if (axios.isAxiosError(err)) {
+        setError(err.response?.data?.detail || 'Enhancement failed');
+      } else {
+        setError('Enhancement failed');
+      }
       setStep('enhance');
     } finally {
       setIsProcessing(false);
@@ -80,7 +90,7 @@ function App() {
     setError('');
   };
 
-  const getStepNumber = () => {
+  const getStepNumber = (): number => {
     if (step === 'upload') return 1;
     if (step === 'enhance') return 2;
     return 3;
@@ -147,7 +157,7 @@ function App() {
             )}
 
             {step === 'processing' && (
-              <ProcessingStatus status="processing" progress={0} />
+              <ProcessingStatus status="processing" />
             )}
 
             {step === 'result' && (
