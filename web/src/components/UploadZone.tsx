@@ -1,6 +1,8 @@
-import { useCallback, useState, CSSProperties } from 'react';
+import { useCallback, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { Upload, Image as ImageIcon, X } from 'lucide-react';
+import { Upload, Image as ImageIcon, X, Loader2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
 
 interface UploadZoneProps {
   onUpload: (file: File) => void;
@@ -41,99 +43,73 @@ export default function UploadZone({ onUpload, isUploading }: UploadZoneProps) {
     setPreview(null);
   };
 
-  const closeButtonStyle: CSSProperties = {
-    position: 'absolute',
-    top: '0.5rem',
-    right: '0.5rem',
-    width: '36px',
-    height: '36px',
-    borderRadius: '50%',
-    background: 'rgba(239, 68, 68, 0.9)',
-    border: 'none',
-    cursor: 'pointer',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    zIndex: 10
-  };
-
-  const previewImageStyle: CSSProperties = {
-    width: '100%',
-    maxHeight: '300px',
-    objectFit: 'contain',
-    borderRadius: '12px'
-  };
-
-  const fileInfoStyle: CSSProperties = {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginTop: '1.25rem',
-    flexWrap: 'wrap',
-    gap: '1rem'
-  };
-
-  const iconContainerStyle: CSSProperties = {
-    width: '64px',
-    height: '64px',
-    borderRadius: '50%',
-    background: 'linear-gradient(135deg, rgba(139, 92, 246, 0.15) 0%, rgba(6, 182, 212, 0.15) 100%)',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    margin: '0 auto 1.5rem'
-  };
-
   if (preview && file) {
     return (
-      <div className="glass" style={{ width: '100%', padding: '1.5rem' }}>
-        <div style={{ position: 'relative' }}>
-          <button onClick={clearFile} style={closeButtonStyle}>
-            <X size={18} color="white" />
-          </button>
-          <img src={preview} alt="Preview" style={previewImageStyle} />
-        </div>
-        <div style={fileInfoStyle}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <ImageIcon size={18} style={{ color: '#a78bfa' }} />
-            <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>
-              {file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name}
-            </span>
-            <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-              ({(file.size / 1024 / 1024).toFixed(2)} MB)
-            </span>
+      <Card className="w-full border-white/10 bg-white/5 backdrop-blur-xl">
+        <CardContent className="p-6">
+          <div className="relative">
+            <Button
+              onClick={clearFile}
+              size="icon"
+              variant="destructive"
+              className="absolute right-2 top-2 z-10 h-9 w-9 rounded-full"
+            >
+              <X size={18} />
+            </Button>
+            <img
+              src={preview}
+              alt="Preview"
+              className="w-full max-h-[300px] object-contain rounded-xl"
+            />
           </div>
-          <button onClick={handleUpload} disabled={isUploading} className="btn-primary">
-            {isUploading ? 'Uploading...' : 'Upload Image'}
-          </button>
-        </div>
-      </div>
+          <div className="mt-5 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-2">
+              <ImageIcon size={18} className="text-violet-400" />
+              <span className="text-sm text-slate-400">
+                {file.name.length > 25 ? file.name.substring(0, 25) + '...' : file.name}
+              </span>
+              <span className="text-xs text-slate-500">
+                ({(file.size / 1024 / 1024).toFixed(2)} MB)
+              </span>
+            </div>
+            <Button onClick={handleUpload} disabled={isUploading}>
+              {isUploading ? (
+                <>
+                  <Loader2 size={18} className="animate-spin" />
+                  Uploading...
+                </>
+              ) : (
+                'Upload Image'
+              )}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
     <div
       {...getRootProps()}
-      className={`dropzone ${isDragActive ? 'active' : ''}`}
-      style={{ width: '100%' }}
+      className={`w-full cursor-pointer rounded-2xl border-2 border-dashed p-12 text-center transition-all duration-300 ${
+        isDragActive
+          ? 'border-violet-500 bg-violet-500/10'
+          : 'border-violet-500/25 bg-violet-500/5 hover:border-violet-500/50 hover:bg-violet-500/10'
+      }`}
     >
       <input {...getInputProps()} />
-      <div className="animate-float" style={iconContainerStyle}>
-        <Upload size={28} style={{ color: '#a78bfa' }} />
+      <div className="mx-auto mb-6 flex h-16 w-16 animate-bounce items-center justify-center rounded-full bg-gradient-to-br from-violet-500/20 to-cyan-500/20">
+        <Upload size={28} className="text-violet-400" />
       </div>
       {isDragActive ? (
-        <p style={{ fontSize: '1.125rem', fontWeight: 500, color: '#a78bfa' }}>
-          Drop image here...
-        </p>
+        <p className="text-lg font-medium text-violet-400">Drop image here...</p>
       ) : (
         <>
-          <p style={{ fontSize: '1.125rem', fontWeight: 500, marginBottom: '0.5rem' }}>
+          <p className="mb-2 text-lg font-medium text-slate-200">
             Drag & drop your image here
           </p>
-          <p style={{ color: '#64748b', marginBottom: '1rem' }}>or click to browse</p>
-          <p style={{ fontSize: '0.8rem', color: '#475569' }}>
-            Supports: JPG, PNG, WebP
-          </p>
+          <p className="mb-4 text-slate-500">or click to browse</p>
+          <p className="text-sm text-slate-600">Supports: JPG, PNG, WebP</p>
         </>
       )}
     </div>

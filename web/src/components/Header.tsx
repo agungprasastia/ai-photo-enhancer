@@ -1,55 +1,29 @@
-import { Wand2 } from 'lucide-react';
-import { CSSProperties, useState } from 'react';
+import { Wand2, Github } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function Header() {
-  const [isHovered, setIsHovered] = useState(false);
-
-  const linkStyle: CSSProperties = {
-    fontSize: '0.875rem',
-    color: isHovered ? '#f1f5f9' : '#64748b',
-    textDecoration: 'none',
-    padding: '0.5rem 1rem',
-    borderRadius: '8px',
-    transition: 'all 0.2s',
-    background: isHovered ? 'rgba(255,255,255,0.05)' : 'transparent'
-  };
-
   return (
-    <header>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '10px',
-            background: 'linear-gradient(135deg, #8b5cf6 0%, #06b6d4 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            boxShadow: '0 4px 12px rgba(139, 92, 246, 0.25)'
-          }}>
-            <Wand2 size={20} color="white" />
+    <header className="border-b border-white/5 px-6 py-4">
+      <div className="mx-auto flex max-w-6xl items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-cyan-500 shadow-lg shadow-violet-500/25">
+            <Wand2 size={20} className="text-white" />
           </div>
-          <span style={{
-            fontSize: '1.25rem',
-            fontWeight: 700,
-            background: 'linear-gradient(135deg, #a78bfa 0%, #22d3ee 100%)',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
-          }}>
+          <span className="bg-gradient-to-r from-violet-400 to-cyan-400 bg-clip-text text-xl font-bold text-transparent">
             Photo Enhancer
           </span>
         </div>
-        <a
-          href="https://github.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          style={linkStyle}
-          onMouseEnter={() => setIsHovered(true)}
-          onMouseLeave={() => setIsHovered(false)}
-        >
-          GitHub
-        </a>
+        <Button variant="ghost" size="sm" asChild>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2"
+          >
+            <Github size={18} />
+            GitHub
+          </a>
+        </Button>
       </div>
     </header>
   );
