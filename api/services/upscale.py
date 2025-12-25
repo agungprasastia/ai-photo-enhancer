@@ -1,59 +1,69 @@
-"""Image Upscaling Service with Enhanced Quality"""
+"""Image Upscaling Service using Real-ESRGAN"""
 
 import cv2
 import numpy as np
+import torch
+from PIL import Image
+from py_real_esrgan.model import RealESRGAN
+
+_models = {}
+
+
+def get_model(scale: int = 4):
+    global _models
+    
+    if scale in _models:
+        return _models[scale]
+    
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    
+    if scale not in [2, 4, 8]:
+        scale = 4
+    
+    model = RealESRGAN(device, scale=scale)
+    model.load_weights(f'weights/RealESRGAN_x{scale}.pth', download=True)
+    
+    _models[scale] = model
+    return model
 
 
 def upscale_image(input_path: str, output_path: str, scale: int = 2) -> None:
-    img = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
+    img_cv = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
     
-    if img is None:
+    if img_cv is None:
         raise ValueError("Could not load image")
     
-    h, w = img.shape[:2]
-    new_size = (w * scale, h * scale)
-    
-    # Check if image has alpha channel
-    has_alpha = img.shape[2] == 4 if len(img.shape) == 3 else False
+    has_alpha = len(img_cv.shape) == 3 and img_cv.shape[2] == 4
     
     if has_alpha:
-        # Split channels
-        bgr = img[:, :, :3]
-        alpha = img[:, :, 3]
+        bgr = img_cv[:, :, :3]
+        alpha = img_cv[:, :, 3]
         
-        # Upscale RGB
-        bgr_up = upscale_with_enhancement(bgr, new_size)
+        rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
+        pil_image = Image.fromarray(rgb)
         
-        # Upscale alpha separately
-        alpha_up = cv2.resize(alpha, new_size, interpolation=cv2.INTER_LANCZOS4)
+        model = get_model(scale)
+        sr_image = model.predict(pil_image)
         
-        # Merge back
-        result = cv2.merge([bgr_up[:,:,0], bgr_up[:,:,1], bgr_up[:,:,2], alpha_up])
+        sr_array = np.array(sr_image)
+        sr_bgr = cv2.cvtColor(sr_array, cv2.COLOR_RGB2BGR)
+        
+        h, w = sr_bgr.shape[:2]
+        alpha_up = cv2.resize(alpha, (w, h), interpolation=cv2.INTER_LANCZOS4)
+        
+        result = cv2.merge([sr_bgr[:,:,0], sr_bgr[:,:,1], sr_bgr[:,:,2], alpha_up])
     else:
-        result = upscale_with_enhancement(img, new_size)
+        if len(img_cv.shape) == 3:
+            rgb = cv2.cvtColor(img_cv, cv2.COLOR_BGR2RGB)
+        else:
+            rgb = cv2.cvtColor(img_cv, cv2.COLOR_GRAY2RGB)
+        
+        pil_image = Image.fromarray(rgb)
+        
+        model = get_model(scale)
+        sr_image = model.predict(pil_image)
+        
+        sr_array = np.array(sr_image)
+        result = cv2.cvtColor(sr_array, cv2.COLOR_RGB2BGR)
     
     cv2.imwrite(output_path, result, [cv2.IMWRITE_PNG_COMPRESSION, 3])
-
-
-def upscale_with_enhancement(img: np.ndarray, new_size: tuple) -> np.ndarray:
-    """Multi-step upscaling with enhancement for best quality"""
-    
-    # Step 1: Upscale with INTER_CUBIC (good for enlarging)
-    upscaled = cv2.resize(img, new_size, interpolation=cv2.INTER_CUBIC)
-    
-    # Step 2: Apply bilateral filter to reduce noise while keeping edges
-    denoised = cv2.bilateralFilter(upscaled, 5, 50, 50)
-    
-    # Step 3: Unsharp masking for detail enhancement
-    gaussian = cv2.GaussianBlur(denoised, (0, 0), 2.0)
-    sharpened = cv2.addWeighted(denoised, 1.8, gaussian, -0.8, 0)
-    
-    # Step 4: Slight contrast enhancement
-    lab = cv2.cvtColor(sharpened, cv2.COLOR_BGR2LAB)
-    l, a, b = cv2.split(lab)
-    clahe = cv2.createCLAHE(clipLimit=1.5, tileGridSize=(8, 8))
-    l = clahe.apply(l)
-    enhanced = cv2.merge([l, a, b])
-    result = cv2.cvtColor(enhanced, cv2.COLOR_LAB2BGR)
-    
-    return result
