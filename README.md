@@ -1,11 +1,11 @@
-# Photo Enhancer
+# AI Photo Enhancer
 
-AI-powered photo enhancement tool with background removal and image upscaling.
+AI-powered photo enhancement tool with background removal and image upscaling using Real-ESRGAN.
 
 ## Tech Stack
 
-- **Frontend**: React + Vite + TypeScript + shadcn/ui + Tailwind CSS
-- **Backend**: FastAPI + Python + rembg + OpenCV
+- **Frontend**: React + Vite + TypeScript + shadcn/ui + Tailwind CSS v4
+- **Backend**: FastAPI + Python + rembg + Real-ESRGAN
 
 ## Project Structure
 
@@ -38,6 +38,16 @@ photo-enhancer/
 └── README.md
 ```
 
+## Deployment
+
+### Backend (Hugging Face Spaces)
+- Push `api/` folder to Hugging Face Space with Docker SDK
+- README.md in api/ contains HF Space metadata
+
+### Frontend (Vercel)
+- Push `web/` folder to Vercel
+- Set `VITE_API_URL` environment variable to your HF Space URL
+
 ## Local Development
 
 ### Backend (API)
@@ -59,7 +69,7 @@ npm run dev
 ## Features
 
 - 🎨 **Background Removal** - AI-powered using rembg with BiRefNet model
-- 🔍 **Image Upscaling** - 2x/4x upscale with enhancement
+- 🔍 **Image Upscaling** - 2x/4x/8x upscale using Real-ESRGAN (py-real-esrgan v2.0.0)
 - 📱 **Responsive UI** - Modern dark theme with shadcn/ui
 - 🔄 **Before/After Slider** - Compare original and enhanced images
 
