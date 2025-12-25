@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import torch
 from PIL import Image
-from py_real_esrgan.model import RealESRGAN
+from RealESRGAN import RealESRGAN
 
 _models = {}
 

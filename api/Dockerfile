@@ -18,7 +18,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # Pre-download Real-ESRGAN model weights during build
 RUN mkdir -p /app/weights && \
-    python -c "from py_real_esrgan.model import RealESRGAN; import torch; \
+    python -c "from RealESRGAN import RealESRGAN; import torch; \
     device = torch.device('cpu'); \
     model = RealESRGAN(device, scale=2); model.load_weights('weights/RealESRGAN_x2.pth', download=True); \
     model = RealESRGAN(device, scale=4); model.load_weights('weights/RealESRGAN_x4.pth', download=True)"
