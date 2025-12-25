@@ -27,7 +27,7 @@ def get_model(scale: int = 4):
     return model
 
 
-def upscale_image(input_path: str, output_path: str, scale: int = 2) -> None:
+def upscale_image(input_path: str, output_path: str, scale: int = 4) -> None:
     img_cv = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
     
     if img_cv is None:

@@ -108,7 +108,7 @@ async def enhance_remove_background(filename: str):
 
 
 @app.post("/enhance/upscale/{filename}")
-async def enhance_upscale(filename: str, scale: int = 2):
+async def enhance_upscale(filename: str, scale: int = 4):
     """Upscale image resolution"""
     
     if scale not in [2, 4]:

@@ -6,4 +6,5 @@ rembg>=2.0.50
 onnxruntime>=1.16.0
 opencv-python-headless>=4.8.0
 torch>=2.0.0
-py-real-esrgan @ git+https://github.com/sberbank-ai/Real-ESRGAN.git
+huggingface_hub<0.21
+realesrgan @ git+https://github.com/sberbank-ai/Real-ESRGAN.git

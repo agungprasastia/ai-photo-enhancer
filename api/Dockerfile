@@ -16,18 +16,11 @@ RUN apt-get update && apt-get install -y \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Pre-download Real-ESRGAN model weights during build
-RUN mkdir -p /app/weights && \
-    python -c "from RealESRGAN import RealESRGAN; import torch; \
-    device = torch.device('cpu'); \
-    model = RealESRGAN(device, scale=2); model.load_weights('weights/RealESRGAN_x2.pth', download=True); \
-    model = RealESRGAN(device, scale=4); model.load_weights('weights/RealESRGAN_x4.pth', download=True)"
-
 # Copy application code
 COPY . .
 
-# Create directories for uploads and results
-RUN mkdir -p /app/uploads /app/results
+# Create directories for uploads, results, and weights
+RUN mkdir -p /app/uploads /app/results /app/weights
 
 # Expose port
 EXPOSE 7860
