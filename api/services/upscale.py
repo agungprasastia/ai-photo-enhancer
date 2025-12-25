@@ -9,25 +9,22 @@ from RealESRGAN import RealESRGAN
 _models = {}
 
 
-def get_model(scale: int = 4):
+def get_model():
     global _models
     
-    if scale in _models:
-        return _models[scale]
+    if 4 in _models:
+        return _models[4]
     
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     
-    if scale not in [2, 4, 8]:
-        scale = 4
+    model = RealESRGAN(device, scale=4)
+    model.load_weights('weights/RealESRGAN_x4.pth', download=True)
     
-    model = RealESRGAN(device, scale=scale)
-    model.load_weights(f'weights/RealESRGAN_x{scale}.pth', download=True)
-    
-    _models[scale] = model
+    _models[4] = model
     return model
 
 
-def upscale_image(input_path: str, output_path: str, scale: int = 4) -> None:
+def upscale_image(input_path: str, output_path: str) -> None:
     img_cv = cv2.imread(input_path, cv2.IMREAD_UNCHANGED)
     
     if img_cv is None:
@@ -42,7 +39,7 @@ def upscale_image(input_path: str, output_path: str, scale: int = 4) -> None:
         rgb = cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB)
         pil_image = Image.fromarray(rgb)
         
-        model = get_model(scale)
+        model = get_model()
         sr_image = model.predict(pil_image)
         
         sr_array = np.array(sr_image)
@@ -60,7 +57,7 @@ def upscale_image(input_path: str, output_path: str, scale: int = 4) -> None:
         
         pil_image = Image.fromarray(rgb)
         
-        model = get_model(scale)
+        model = get_model()
         sr_image = model.predict(pil_image)
         
         sr_array = np.array(sr_image)

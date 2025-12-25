@@ -108,29 +108,25 @@ async def enhance_remove_background(filename: str):
 
 
 @app.post("/enhance/upscale/{filename}")
-async def enhance_upscale(filename: str, scale: int = 4):
-    """Upscale image resolution"""
-    
-    if scale not in [2, 4]:
-        raise HTTPException(status_code=400, detail="Scale must be 2 or 4")
+async def enhance_upscale(filename: str):
+    """Upscale image resolution 4x using Real-ESRGAN"""
     
     input_path = os.path.join(UPLOAD_DIR, filename)
     
     if not os.path.exists(input_path):
         raise HTTPException(status_code=404, detail="File not found")
     
-    # Generate output filename
-    output_filename = f"upscale{scale}x_{filename}"
+    output_filename = f"upscale4x_{filename}"
     output_path = os.path.join(RESULT_DIR, output_filename)
     
     try:
-        upscale_image(input_path, output_path, scale)
+        upscale_image(input_path, output_path)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Processing failed: {str(e)}")
     
     return {
         "success": True,
-        "message": f"Image upscaled {scale}x successfully",
+        "message": "Image upscaled 4x successfully",
         "original": filename,
         "result": output_filename
     }
