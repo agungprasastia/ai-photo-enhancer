@@ -1,64 +1,67 @@
-# AI Photo Enhancer
+# Photo Enhancer
 
-AI-powered photo enhancement application with background removal and image upscaling.
+AI-powered photo enhancement tool with background removal and image upscaling.
+
+## Tech Stack
+
+- **Frontend**: React + Vite + TypeScript + shadcn/ui + Tailwind CSS
+- **Backend**: FastAPI + Python + rembg + OpenCV
 
 ## Project Structure
 
 ```
 photo-enhancer/
-├── api/              # Python FastAPI Backend
-│   ├── main.py
+├── api/
 │   ├── services/
 │   │   ├── background.py
 │   │   └── upscale.py
-│   └── requirements.txt
-│
-├── web/              # React + Vite Frontend
+│   ├── main.py
+│   ├── requirements.txt
+│   └── Dockerfile
+├── web/
 │   ├── src/
-│   └── package.json
-│
-├── uploads/          # Uploaded images
-├── results/          # Processed images
+│   │   ├── components/
+│   │   │   ├── ui/
+│   │   │   ├── Header.tsx
+│   │   │   ├── UploadZone.tsx
+│   │   │   ├── EnhanceOptions.tsx
+│   │   │   ├── ProcessingStatus.tsx
+│   │   │   └── BeforeAfter.tsx
+│   │   ├── lib/
+│   │   ├── App.tsx
+│   │   ├── main.tsx
+│   │   └── index.css
+│   ├── package.json
+│   └── vite.config.ts
+├── uploads/
+├── results/
 └── README.md
 ```
 
-## Features
+## Local Development
 
-- 🖼️ **Background Removal** - AI-powered background removal using rembg
-- 🔍 **Image Upscaling** - Enhance image resolution 2x/4x
-- 🎨 **Modern UI** - Beautiful dark theme with glassmorphism effects
-- 📱 **Responsive** - Works on desktop and mobile
-
-## Quick Start
-
-### 1. Setup Backend
-
+### Backend (API)
 ```bash
 cd api
 python -m venv venv
 .\venv\Scripts\activate  # Windows
-source venv/bin/activate # Linux/Mac
 pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-Backend runs at: http://localhost:8000
-
-### 2. Setup Frontend
-
+### Frontend (Web)
 ```bash
 cd web
 npm install
 npm run dev
 ```
 
-Frontend runs at: http://localhost:5173
+## Features
 
-## Tech Stack
-
-- **Frontend**: React 19, Vite, TailwindCSS
-- **Backend**: Python FastAPI
-- **AI**: rembg (background removal), Real-ESRGAN (upscaling)
+- 🎨 **Background Removal** - AI-powered using rembg with BiRefNet model
+- 🔍 **Image Upscaling** - 2x/4x upscale with enhancement
+- 📱 **Responsive UI** - Modern dark theme with shadcn/ui
+- 🔄 **Before/After Slider** - Compare original and enhanced images
 
 ## License
 

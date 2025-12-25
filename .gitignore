@@ -58,6 +58,8 @@ uploads/*
 !uploads/.gitkeep
 results/*
 !results/.gitkeep
+api/uploads/*
+api/results/*
 
 # ===== AI Models (large files) =====
 *.onnx

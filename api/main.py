@@ -24,9 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Directories
-UPLOAD_DIR = "../uploads"
-RESULT_DIR = "../results"
+# Directories (use absolute paths for Docker)
+UPLOAD_DIR = os.path.join(os.path.dirname(__file__), "uploads")
+RESULT_DIR = os.path.join(os.path.dirname(__file__), "results")
 os.makedirs(UPLOAD_DIR, exist_ok=True)
 os.makedirs(RESULT_DIR, exist_ok=True)
 
