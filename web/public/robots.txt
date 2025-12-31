@@ -1,8 +1,8 @@
 # robots.txt for Photo Enhancer
-# https://ai-photo-enhancer-teal.vercel.app/
+# https://ai-photo-enhancer-tool.vercel.app/
 
 User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://ai-photo-enhancer-teal.vercel.app/sitemap.xml
+Sitemap: https://ai-photo-enhancer-tool.vercel.app/sitemap.xml
