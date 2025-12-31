@@ -1,5 +1,4 @@
-import { Wand2, Github } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Wand2 } from 'lucide-react';
 
 export default function Header() {
   return (
@@ -13,17 +12,6 @@ export default function Header() {
             Photo Enhancer
           </span>
         </div>
-        <Button variant="ghost" size="sm" asChild>
-          <a
-            href="https://github.com/agungprasastia"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2"
-          >
-            <Github size={18} />
-            GitHub
-          </a>
-        </Button>
       </div>
     </header>
   );
