@@ -9,6 +9,7 @@ import { Download, RotateCcw, CheckCircle2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardContent } from '@/components/ui/card';
+import { compressImage } from '@/lib/imageUtils';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
@@ -29,16 +30,19 @@ function App() {
     setIsUploading(true);
     setError('');
 
-    const formData = new FormData();
-    formData.append('file', file);
-
     try {
+      // Compress image before upload for faster transfer
+      const compressedFile = await compressImage(file);
+      
+      const formData = new FormData();
+      formData.append('file', compressedFile);
+
       const response = await axios.post(`${API_URL}/upload`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       });
 
       setUploadedFilename(response.data.filename);
-      setOriginalUrl(URL.createObjectURL(file));
+      setOriginalUrl(URL.createObjectURL(file)); // Use original for preview
       setStep('enhance');
     } catch (err) {
       if (axios.isAxiosError(err)) {
@@ -51,7 +55,7 @@ function App() {
     }
   };
 
-  const handleEnhance = async (option: string) => {
+  const handleEnhance = async (option: string, scale?: number) => {
     setSelectedOption(option);
     setIsProcessing(true);
     setStep('processing');
@@ -60,7 +64,7 @@ function App() {
     try {
       const endpoint = option === 'background'
         ? `/enhance/background/${uploadedFilename}`
-        : `/enhance/upscale/${uploadedFilename}?scale=2`;
+        : `/enhance/upscale/${uploadedFilename}?scale=${scale || 2}`;
 
       const response = await axios.post(`${API_URL}${endpoint}`);
 
