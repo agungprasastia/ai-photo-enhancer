@@ -91,16 +91,19 @@ async def upload_image(file: UploadFile = File(...)):
     file_path = os.path.join(UPLOAD_DIR, filename)
     
     try:
-        # Validate image first
+        # Read file content into memory first
         file.file.seek(0)
-        image = Image.open(file.file)
+        content = file.file.read()
+        
+        # Validate image
+        from io import BytesIO
+        image = Image.open(BytesIO(content))
         width, height = image.size
         image.close()
         
         # Direct write to disk (faster than re-encoding)
-        file.file.seek(0)
         with open(file_path, 'wb') as f:
-            shutil.copyfileobj(file.file, f)
+            f.write(content)
             
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid image file: {str(e)}")
