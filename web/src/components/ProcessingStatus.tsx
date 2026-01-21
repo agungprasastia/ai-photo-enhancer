@@ -3,17 +3,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 
 interface ProcessingStatusProps {
-  status: 'uploading' | 'processing' | 'complete' | 'error';
+  progress?: number;
+  message?: string;
 }
 
-export default function ProcessingStatus({ status }: ProcessingStatusProps) {
-  const statusMessages: Record<string, string> = {
-    uploading: 'Uploading image...',
-    processing: 'AI is working its magic...',
-    complete: 'Enhancement complete!',
-    error: 'Something went wrong'
-  };
-
+export default function ProcessingStatus({ progress = 0, message = 'Processing...' }: ProcessingStatusProps) {
   return (
     <Card className="w-full border-white/10 bg-white/5 backdrop-blur-xl">
       <CardContent className="flex flex-col items-center py-12">
@@ -21,9 +15,10 @@ export default function ProcessingStatus({ status }: ProcessingStatusProps) {
           <Loader2 size={28} className="animate-spin text-violet-400" />
         </div>
         <p className="mb-4 text-lg font-medium text-slate-200">
-          {statusMessages[status] || 'Processing...'}
+          {message}
         </p>
-        <Progress value={66} className="w-48" />
+        <Progress value={progress} className="w-48" />
+        <p className="mt-2 text-sm text-slate-500">{progress}%</p>
       </CardContent>
     </Card>
   );

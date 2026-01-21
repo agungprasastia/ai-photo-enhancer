@@ -25,6 +25,8 @@ function App() {
   const [enhancedUrl, setEnhancedUrl] = useState('');
   const [resultFilename, setResultFilename] = useState('');
   const [error, setError] = useState('');
+  const [progress, setProgress] = useState(0);
+  const [progressMessage, setProgressMessage] = useState('Processing...');
 
   const handleUpload = async (file: File) => {
     setIsUploading(true);
@@ -60,6 +62,8 @@ function App() {
     setIsProcessing(true);
     setStep('processing');
     setError('');
+    setProgress(0);
+    setProgressMessage('Starting...');
 
     try {
       const endpoint = option === 'background'
@@ -67,6 +71,28 @@ function App() {
         : `/enhance/upscale/${uploadedFilename}?scale=${scale || 2}`;
 
       const response = await axios.post(`${API_URL}${endpoint}`);
+      const taskId = response.data.task_id;
+
+      // If we have a task_id, we could use SSE for real-time progress
+      // For now, simulate progress since the processing is async
+      if (taskId) {
+        // Connect to SSE for real-time progress
+        const eventSource = new EventSource(`${API_URL}/progress/${taskId}`);
+        
+        eventSource.onmessage = (event) => {
+          const data = JSON.parse(event.data);
+          setProgress(data.progress);
+          setProgressMessage(data.message);
+          
+          if (data.done) {
+            eventSource.close();
+          }
+        };
+
+        eventSource.onerror = () => {
+          eventSource.close();
+        };
+      }
 
       setResultFilename(response.data.result);
       setEnhancedUrl(`${API_URL}/download/${response.data.result}`);
@@ -95,6 +121,8 @@ function App() {
     setEnhancedUrl('');
     setResultFilename('');
     setError('');
+    setProgress(0);
+    setProgressMessage('Processing...');
   };
 
   const getStepNumber = (): number => {
@@ -187,7 +215,7 @@ function App() {
             )}
 
             {step === 'processing' && (
-              <ProcessingStatus status="processing" />
+              <ProcessingStatus progress={progress} message={progressMessage} />
             )}
 
             {step === 'result' && (
